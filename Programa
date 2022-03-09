@@ -1,0 +1,40 @@
+import pandas as pd
+# Passe 1 - importar a base de dados 
+tabela = pd.read_csv("C:/Users/Iza e Luzo/Downloads/telecom_users.csv")
+display(tabela)
+# Passo 2 - Visualizar essa base de dados
+# Entender as informações que você tem disponível 
+# Descobrir as cagadas do banco de dados  
+
+tabela = tabela.drop("Unnamed: 0", axis=1)
+
+# Passo 3 - Fazer os tratamentos de dados
+# Analisar se o python está lendo as informações no formato correto
+tabela["TotalGasto"] = pd.to_numeric(tabela["TotalGasto"], errors="coerce")
+
+
+# Será que existe alguma coluna vazia?
+# axis = o -> linha; axis = 1 -> coluna | all -> todos elementos vazios any -> pelo menos 1 vazio
+tabela = tabela.dropna(how="all", axis=1) 
+# Será que existe alguma informação vazia em uma linha?
+tabela = tabela.dropna(how="any", axis=0)
+
+print(tabela.info())
+
+# Passo 4 - Análise inicial / Análise Global
+# Quantos clientes cancelaram e quantos não cancelaram
+print(tabela["Churn"].value_counts())
+# O percentual de clientes que cancelatam e que não cancelaram 
+print(tabela["Churn"].value_counts(normalize=True).map("{:.1%}".format))
+
+# Passo 5 - Anáçise detalhada (busca a causa / a solução dos cancelamentos)
+import plotly.express as px
+
+# Criar o grafico
+
+for coluna in tabela.columns:
+
+    grafico = px.histogram(tabela, x=coluna, color="Churn", color_discrete_sequence=["blue","green"])
+
+    # Exibir o grafico
+    grafico.show()
